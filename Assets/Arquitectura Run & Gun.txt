@@ -1,0 +1,5 @@
+Arquitectura Run & Gun:
+-clase estática con eventos de movimiento de personaje, MoveEvents.
+-MonoBehaviour AnimationManager, escucha moveEvents y maneja animaciones de manera acorde.
+-clase estática con eventos de Colisión para balas, tanto para player como para npcs.
+-Scriptable Objects que almacenan sprites/animaciones de diferentes estados, me salto animator parcialmente(?
