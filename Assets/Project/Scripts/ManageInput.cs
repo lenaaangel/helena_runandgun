@@ -11,7 +11,8 @@ public class ManageInput : MonoBehaviour
 
     private bool _isMoveHeld;
     private bool _isAttacking;
-    private bool _isLooking;
+    private bool _isLookingUp;
+    private bool _isLookingDown;
     private float _moveDirection;
     private float _lookDirection;
 
@@ -53,7 +54,7 @@ public class ManageInput : MonoBehaviour
         _moveAction.canceled += context => OnMoveCancelled();
         _attackAction.performed += OnAttackPressed;
         _attackAction.canceled += OnAttackCancelled;
-        _lookAction.performed += context => OnLookPerformed(_isLooking, context.ReadValue<float>());
+        _lookAction.performed += context => OnLookPerformed(_isLookingUp, context.ReadValue<float>());
         _lookAction.canceled += context => OnLookCancelled();    
 
     }
@@ -75,6 +76,7 @@ public class ManageInput : MonoBehaviour
 
     void OnMovePerformed(bool _isMoving, float direction)
     {
+        if (_isLookingDown || _isLookingDown && _isAttacking) return;
         _isMoveHeld = true;
         _isMoving = _isMoveHeld;
         _movePerformed?.DynamicInvoke(_isMoving, direction);
@@ -107,16 +109,25 @@ public class ManageInput : MonoBehaviour
 
     void OnLookPerformed(bool isLooking, float direction)
     {
-        if (direction < 0) return;
-        _isLooking = true;
-        isLooking = _isLooking;
-        _lookDirection = direction;
-        _lookPerformed?.DynamicInvoke(_isLooking, _lookDirection);
+        if (direction > 0) 
+        {
+            _isLookingUp = true;
+            isLooking = _isLookingUp;
+            _lookDirection = direction;
+            _lookPerformed?.DynamicInvoke(_isLookingUp, _lookDirection);
+        }else if(direction < 0)
+        {
+            if(_isMoveHeld) return;
+            _isLookingDown = true;
+            _lookPerformed?.DynamicInvoke(false, direction);
+        }
+        
     }
 
     void OnLookCancelled()
     {
-        _isLooking = false;
-        _lookPerformed?.DynamicInvoke(_isLooking, 0);
+        _isLookingDown = false;
+        _isLookingUp = false;
+        _lookPerformed?.DynamicInvoke(_isLookingUp, 0);
     }
 }

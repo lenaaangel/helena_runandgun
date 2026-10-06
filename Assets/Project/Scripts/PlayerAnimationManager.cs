@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerAnimationManager : MonoBehaviour
 {
     [Header("Player Animators")]
+    [SerializeField] private GameObject _topHalf;
     [SerializeField] private Animator _topHalfAnimator;
     [SerializeField] private Animator _bottomHalfAnimator;
     [SerializeField] private SpriteRenderer _topHalfRenderer;
@@ -47,15 +48,22 @@ public class PlayerAnimationManager : MonoBehaviour
 
     void OnPlayerLook(bool isLooking, float direction)
     {
-        if(direction > 0)
+        if (direction > 0)
         {
             _topHalfAnimator.SetBool("isLooking", isLooking);
 
         }
-        else { 
-            _topHalfAnimator.SetBool("isLooking", isLooking);
+        else if (direction < 0)
+        {
+            _bottomHalfRenderer.enabled = false;
+            _topHalfAnimator.SetBool("isCrouching", true);
+        }
+        else
+        {
+            _bottomHalfRenderer.enabled = true;
+            _topHalfAnimator.SetBool("isCrouching", false);
+            _topHalfAnimator.SetBool("isLooking", false);
         }
 
-        //_bottomHalfAnimator.SetBool("isLooking", isLooking);
     }
 }
