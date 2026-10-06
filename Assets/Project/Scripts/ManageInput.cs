@@ -61,7 +61,7 @@ public class ManageInput : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(_lookDirection);
+        
     }
 
     IEnumerator onMoveHeld(float direction)

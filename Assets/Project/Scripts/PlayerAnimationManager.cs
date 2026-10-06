@@ -9,6 +9,7 @@ public class PlayerAnimationManager : MonoBehaviour
     [SerializeField] private SpriteRenderer _topHalfRenderer;
     [SerializeField] private SpriteRenderer _bottomHalfRenderer;
 
+    private float _lookDirection;
 
 
     void Start()
@@ -42,12 +43,22 @@ public class PlayerAnimationManager : MonoBehaviour
 
     void OnPlayerAttack(bool isAttacking) 
     {
+        
+        
+        if(_lookDirection < 0)
+        {
+            _bottomHalfRenderer.enabled = false;
+            _topHalfAnimator.SetBool("isCrouching", true);
+            _topHalfAnimator.SetBool("isAttacking", isAttacking);
+        }
         _topHalfAnimator.SetBool("isAttacking", isAttacking);
         _bottomHalfAnimator.SetBool("isAttacking", isAttacking);
+        
     }
 
     void OnPlayerLook(bool isLooking, float direction)
     {
+        _lookDirection = direction;
         if (direction > 0)
         {
             _topHalfAnimator.SetBool("isLooking", isLooking);

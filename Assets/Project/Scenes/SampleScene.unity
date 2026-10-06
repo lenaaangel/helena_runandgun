@@ -376,6 +376,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &808091168 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2667476798976800830, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
+  m_PrefabInstance: {fileID: 1981800965}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &808091173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 808091168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bac1a9cb3d45d248881b481017a672e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Muzzle
+  _muzzle: {fileID: 470241927}
+  _standingLeftOffset: {x: 1.29, y: -0.309}
+  _standingRightOffset: {x: 0.804, y: -0.309}
 --- !u!1 &966515897 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6885855578709711534, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
@@ -527,6 +547,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1176154038280690081, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
+      propertyPath: m_LinearDamping
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 2667476798976800830, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
       propertyPath: m_Name
       value: Player
@@ -581,7 +605,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8129583328766797651, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
       insertIndex: -1
       addedObject: {fileID: 470241927}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2667476798976800830, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 808091173}
   m_SourcePrefab: {fileID: 100100000, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
