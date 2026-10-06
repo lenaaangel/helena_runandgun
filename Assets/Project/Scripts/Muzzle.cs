@@ -7,6 +7,7 @@ public class Muzzle : MonoBehaviour
     [SerializeField] private Vector2 _standingLeftOffset;
     [SerializeField] private Vector2 _standingRightOffset;
     [SerializeField] private Vector2 _crouchingOffset;
+    [SerializeField] private Vector2 _lookingUpOffset;
     
 
     private bool _lookingLeft;
@@ -20,7 +21,7 @@ public class Muzzle : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_lookDirection);
+        //Debug.Log(_lookDirection);
     }
 
     void OnPlayerMove(bool isMoving, float direction)
@@ -44,24 +45,18 @@ public class Muzzle : MonoBehaviour
 
     void UpdateMuzzle()
     {
-        Vector2 offset;
+        Vector2 offset = _lookingLeft ? _standingLeftOffset : _standingRightOffset;
+      
+       
         if (_lookDirection < 0)
         {
-            offset = _crouchingOffset;
-        }
-        else offset = _standingLeftOffset;
-
-
-            offset = _standingRightOffset;
-        if (_lookingLeft)
+            offset += _crouchingOffset;
+        }else if(_lookDirection > 0)
         {
-            offset.x = -_standingLeftOffset.x;
+            offset = _lookingUpOffset;
         }
-        else
-        {
-            offset.x = _standingRightOffset.x;
-        }
-            _muzzle.localPosition = offset;
+       
+        _muzzle.localPosition = offset;
 
     }
 }

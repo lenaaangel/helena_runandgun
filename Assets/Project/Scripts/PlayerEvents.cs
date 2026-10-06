@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerEvents
+public static class PlayerEvents
 {
     public static event Action<bool, float> OnMove;
     public static event Action<bool, float> OnLook;

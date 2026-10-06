@@ -8,11 +8,19 @@ public class ManageInput : MonoBehaviour
 {
     [Header("Movement Values")]
     [SerializeField] private float _moveForce = 5f;
+    [SerializeField] private float _jumpForce = 2f;
+    [Header("Collider Values")]
+    [SerializeField] private Vector2 _colliderCrouchingOffset;
+    [SerializeField] private Vector2 _colliderCrouchingSize;
+
+    private Vector2 _standingColliderSize;
+    private Vector2 _standingColliderOffset;
 
     private bool _isMoveHeld;
     private bool _isAttacking;
     private bool _isLookingUp;
     private bool _isLookingDown;
+    private bool _isJumping;
     private float _moveDirection;
     private float _lookDirection;
 
@@ -24,6 +32,7 @@ public class ManageInput : MonoBehaviour
     private Action<bool, float> _movePerformed;
     private Action<bool, float> _lookPerformed;
     private Rigidbody2D _rb;
+    private CapsuleCollider2D _collider;
 
     private void Awake()
     {
@@ -35,7 +44,9 @@ public class ManageInput : MonoBehaviour
         _movePerformed = PlayerEvents.RaiseMovePerformed;
         _lookPerformed = PlayerEvents.RaiseLookPerformed;
         _rb = GetComponent<Rigidbody2D>();
+        _collider = GetComponent<CapsuleCollider2D>();
     }
+
 
     private void OnEnable()
     {
@@ -54,14 +65,18 @@ public class ManageInput : MonoBehaviour
         _moveAction.canceled += context => OnMoveCancelled();
         _attackAction.performed += OnAttackPressed;
         _attackAction.canceled += OnAttackCancelled;
+        _jumpAction.performed += OnPlayerJump;
         _lookAction.performed += context => OnLookPerformed(_isLookingUp, context.ReadValue<float>());
-        _lookAction.canceled += context => OnLookCancelled();    
+        _lookAction.canceled += context => OnLookCancelled();
 
+        _standingColliderSize = _collider.size;
+        _standingColliderOffset = _collider.offset;
     }
 
     void Update()
     {
-        
+        Debug.Log(_isJumping);
+        ApplyGravity();
     }
 
     IEnumerator onMoveHeld(float direction)
@@ -118,6 +133,8 @@ public class ManageInput : MonoBehaviour
         }else if(direction < 0)
         {
             if(_isMoveHeld) return;
+            _collider.offset += _colliderCrouchingOffset;
+            _collider.size += _colliderCrouchingSize;
             _isLookingDown = true;
             _lookPerformed?.DynamicInvoke(false, direction);
         }
@@ -126,8 +143,44 @@ public class ManageInput : MonoBehaviour
 
     void OnLookCancelled()
     {
+        _collider.size = _standingColliderSize;
+        _collider.offset = _standingColliderOffset;
         _isLookingDown = false;
         _isLookingUp = false;
         _lookPerformed?.DynamicInvoke(_isLookingUp, 0);
+    }
+
+    void OnPlayerJump(InputAction.CallbackContext context)
+    {
+        if (_isJumping) return;
+        if (context.performed)
+        {
+            _isJumping = true;
+            PlayerEvents.RaiseJumpPerformed(_isJumping);
+            _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        
+        if (collision.gameObject.CompareTag("Ground") && _isJumping)
+        {
+            _isJumping = false;
+            PlayerEvents.RaiseJumpPerformed(_isJumping);
+
+        }
+    }
+
+    void ApplyGravity()
+    {
+        if(_isJumping)
+        {
+            _rb.gravityScale = 5f;
+        }
+        else
+        {
+            _rb.gravityScale = 1f;
+        }
     }
 }

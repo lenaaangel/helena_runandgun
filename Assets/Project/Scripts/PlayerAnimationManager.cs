@@ -10,6 +10,7 @@ public class PlayerAnimationManager : MonoBehaviour
     [SerializeField] private SpriteRenderer _bottomHalfRenderer;
 
     private float _lookDirection;
+    private bool _isJumping;
 
 
     void Start()
@@ -17,6 +18,8 @@ public class PlayerAnimationManager : MonoBehaviour
         PlayerEvents.OnMove += OnPlayerMove;
         PlayerEvents.onAttack += OnPlayerAttack;
         PlayerEvents.OnLook += OnPlayerLook;
+        PlayerEvents.OnJump += OnPlayerJump;
+
     }
 
     // Update is called once per frame
@@ -66,7 +69,7 @@ public class PlayerAnimationManager : MonoBehaviour
         }
         else if (direction < 0)
         {
-            _bottomHalfRenderer.enabled = false;
+            if (!_isJumping) _bottomHalfRenderer.enabled = false; ;
             _topHalfAnimator.SetBool("isCrouching", true);
         }
         else
@@ -77,4 +80,13 @@ public class PlayerAnimationManager : MonoBehaviour
         }
 
     }
+
+    void OnPlayerJump(bool isJumping)
+    {
+        _isJumping = isJumping;
+        _bottomHalfAnimator.SetBool("isJumping", isJumping);
+        _topHalfAnimator.SetBool("isJumping", isJumping);
+    }
+
+    
 }
