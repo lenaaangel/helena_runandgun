@@ -396,6 +396,7 @@ MonoBehaviour:
   _muzzle: {fileID: 470241927}
   _standingLeftOffset: {x: 1.29, y: -0.309}
   _standingRightOffset: {x: 0.804, y: -0.309}
+  _crouchingOffset: {x: 0, y: -1}
 --- !u!1 &966515897 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6885855578709711534, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}
