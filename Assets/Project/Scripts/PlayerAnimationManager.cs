@@ -50,7 +50,7 @@ public class PlayerAnimationManager : MonoBehaviour
         
         if(_lookDirection < 0)
         {
-            _bottomHalfRenderer.enabled = false;
+            if(!_isJumping) _bottomHalfRenderer.enabled = false;
             _topHalfAnimator.SetBool("isCrouching", true);
             _topHalfAnimator.SetBool("isAttacking", isAttacking);
         }

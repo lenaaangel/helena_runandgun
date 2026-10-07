@@ -398,6 +398,7 @@ MonoBehaviour:
   _standingRightOffset: {x: 0.804, y: -0.309}
   _crouchingOffset: {x: 0, y: -0.65}
   _lookingUpOffset: {x: -0.25, y: 1}
+  _lookingDownOffset: {x: -0.1, y: -1.5}
 --- !u!1 &966515897 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6885855578709711534, guid: 26eb95885b7209548ac286a5d48d8a73, type: 3}

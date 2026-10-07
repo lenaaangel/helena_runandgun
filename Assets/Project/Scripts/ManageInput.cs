@@ -75,7 +75,7 @@ public class ManageInput : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(_isJumping);
+        //Debug.Log(_isJumping);
         ApplyGravity();
     }
 
@@ -152,7 +152,8 @@ public class ManageInput : MonoBehaviour
 
     void OnPlayerJump(InputAction.CallbackContext context)
     {
-        if (_isJumping) return;
+
+        if (_isJumping || _isLookingDown) return;
         if (context.performed)
         {
             _isJumping = true;
