@@ -697,6 +697,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ARMob_23
+      rect:
+        serializedVersion: 2
+        x: 751
+        y: 20
+        width: 3
+        height: 3
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bf8ba90634c94a40abc71bba0f1ea8c
+      internalID: -1269759306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -727,6 +749,7 @@ TextureImporter:
       ARMob_20: 1532881534901853475
       ARMob_21: -3396063415109935441
       ARMob_22: -8294070591842695014
+      ARMob_23: -1269759306
       ARMob_3: -1859718735348554792
       ARMob_4: -8145076093531036524
       ARMob_5: -1625562477868800982

@@ -12,6 +12,9 @@ public class Player : MonoBehaviour
     [Header("Collider Values")]
     [SerializeField] private Vector2 _colliderCrouchingOffset;
     [SerializeField] private Vector2 _colliderCrouchingSize;
+    [Header("Bullet Prefab")][SerializeField] private GameObject _bulletPrefab;
+    [Header("Weapon Muzzle")][SerializeField] private Transform _muzzle;
+
 
     private Vector2 _standingColliderSize;
     private Vector2 _standingColliderOffset;
@@ -24,6 +27,8 @@ public class Player : MonoBehaviour
     private bool _isDead;
     private float _moveDirection;
     private float _lookDirection;
+
+    private float _facingDirection = 1f;
 
     private InputSystem_Actions _inputActions;
     private InputAction _moveAction;
@@ -79,7 +84,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log(_isJumping);
+        Debug.Log(_facingDirection);
         ApplyGravity();
     }
 
@@ -95,6 +100,8 @@ public class Player : MonoBehaviour
 
     void OnMovePerformed(bool _isMoving, float direction)
     {
+        if (direction > 0) _facingDirection = 1;
+        else if (direction < 0) _facingDirection = -1;
         if (_isLookingDown || _isLookingDown && _isAttacking) return;
         _isMoveHeld = true;
         _isMoving = _isMoveHeld;
@@ -112,7 +119,9 @@ public class Player : MonoBehaviour
     {
         if (context.performed)
         {
+
             _isAttacking = true;
+            StartCoroutine(Shoot());
             PlayerEvents.RaisePlayerAttack(_isAttacking);
         }
     }
@@ -122,6 +131,7 @@ public class Player : MonoBehaviour
         if (context.canceled)
         {
             _isAttacking = false;
+            StartCoroutine(Shoot());
             PlayerEvents.RaisePlayerAttack(_isAttacking);
         }
     }
@@ -175,6 +185,14 @@ public class Player : MonoBehaviour
             PlayerEvents.RaiseJumpPerformed(false);
 
         }
+        if (_isDead)
+        {
+            if (collision.gameObject.CompareTag("Ground"))
+            {
+                _rb.bodyType = RigidbodyType2D.Static;
+                _collider.enabled = false;
+            }
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -203,6 +221,22 @@ public class Player : MonoBehaviour
         _isDead = isDead;
         PlayerEvents.RaisePlayerDeath(_isDead);
         _inputActions.Disable();
+        
+    }
+
+    IEnumerator Shoot()
+    {
+        
+        while(_isAttacking && !_isDead)
+        {
+                    
+            GameObject bullet = Instantiate(_bulletPrefab, new Vector3(_muzzle.position.x, _muzzle.position.y, 0), Quaternion.identity);
+            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+            rb.AddForce(new Vector2(_facingDirection, 0f) * 10f, ForceMode2D.Impulse);
+            yield return new WaitForSeconds(1f);
+        
+        }
+        
     }
 
 }

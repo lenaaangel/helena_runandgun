@@ -12,11 +12,14 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private Vector2 _standingLeftOffset;
     [SerializeField]private Vector2 lookDirection = new Vector2(1f, 0f);
     [SerializeField] private LayerMask _playerLayerMask;
+    [SerializeField] private Animator _enemyAnimator;
     [SerializeField]private SpriteRenderer _spriteRenderer;
     [SerializeField]private SpriteRenderer _exclamationRenderer;
     [SerializeField] private GameObject _bulletPrefab;
-    private bool playerDetected;
-    private bool _isDead;
+    [SerializeField] private bool _isDead = false;
+
+    private bool _playerDetected;
+    private bool _isAttacking;
 
     public Action<EnemyBehaviour> OnDeath;
 
@@ -33,18 +36,23 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void LineOfSight()
     {
+        if (_isDead) return;
+
         Ray2D ray = new Ray2D(transform.position, lookDirection);
         hit = Physics2D.Raycast(ray.origin, ray.direction, 10f, _playerLayerMask);
         if(hit)
         {
             if(hit.collider.CompareTag("Player"))
             {
+                if (_playerDetected) return;
                 StartCoroutine(ShowExclamation());
-                playerDetected = true;
+                _playerDetected = true;
+                _isAttacking = true;
+                StartCoroutine(Shoot());
             }
             else
             {
-                playerDetected = false;
+                _playerDetected = false;
             }
         }
         Debug.DrawRay(ray.origin, ray.direction * 10f, Color.red);
@@ -75,17 +83,34 @@ public class EnemyBehaviour : MonoBehaviour
     public void OnEnemyDeath(bool isDead)
     {
         _isDead = isDead;
+        _enemyAnimator.SetBool("isDead", _isDead);
+        StartCoroutine(Death());
     }
 
     IEnumerator Shoot()
     {
-        if(playerDetected && !_isDead)
-        {
-            while (!_isDead) 
-            {
-                Instantiate(_bulletPrefab, new Vector3(_muzzle.position.x, _muzzle.position.y, 0), Quaternion.identity);
-                yield return new WaitForSeconds(1f);
-            }
-        }
+
+        if (_isDead) yield break;
+
+         while (!_isDead && _playerDetected) 
+         {
+            GameObject bullet = Instantiate(_bulletPrefab, new Vector3(_muzzle.position.x, _muzzle.position.y, 0), Quaternion.identity);
+            _enemyAnimator.SetBool("isAttacking", _isAttacking);
+            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+            rb.AddForce(lookDirection*10f, ForceMode2D.Impulse);
+            yield return new WaitForSecondsRealtime(1f);
+                
+
+         }
+        _isAttacking = false;
+        _enemyAnimator.SetBool("isAttacking", false);
+    }
+
+    IEnumerator Death()
+    {
+        _spriteRenderer.DOFade(0, 1.5f);
+        yield return new WaitForSeconds(1.5f);
+        gameObject.SetActive(false);
+        yield return null;
     }
 }
