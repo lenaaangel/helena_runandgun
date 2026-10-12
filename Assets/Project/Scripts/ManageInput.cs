@@ -20,7 +20,7 @@ public class ManageInput : MonoBehaviour
     private bool _isAttacking;
     private bool _isLookingUp;
     private bool _isLookingDown;
-    private bool _isJumping;
+    private bool _isGrounded;
     private float _moveDirection;
     private float _lookDirection;
 
@@ -153,11 +153,11 @@ public class ManageInput : MonoBehaviour
     void OnPlayerJump(InputAction.CallbackContext context)
     {
 
-        if (_isJumping || _isLookingDown) return;
+        if (!_isGrounded || _isLookingDown) return;
         if (context.performed)
         {
-            _isJumping = true;
-            PlayerEvents.RaiseJumpPerformed(_isJumping);
+            _isGrounded = false;
+            PlayerEvents.RaiseJumpPerformed(true);
             _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
     }
@@ -165,23 +165,31 @@ public class ManageInput : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         
-        if (collision.gameObject.CompareTag("Ground") && _isJumping)
+        if (collision.gameObject.CompareTag("Ground") && !_isGrounded)
         {
-            _isJumping = false;
-            PlayerEvents.RaiseJumpPerformed(_isJumping);
+            _isGrounded = true;
+            PlayerEvents.RaiseJumpPerformed(false);
 
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            _isGrounded = false;
         }
     }
 
     void ApplyGravity()
     {
-        if(_isJumping)
+        if(_isGrounded)
         {
-            _rb.gravityScale = 5f;
+            _rb.gravityScale = 1f;
         }
         else
         {
-            _rb.gravityScale = 1f;
+            _rb.gravityScale = 5f;
         }
     }
 }

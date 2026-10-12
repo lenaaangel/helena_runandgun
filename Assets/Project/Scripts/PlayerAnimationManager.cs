@@ -69,7 +69,7 @@ public class PlayerAnimationManager : MonoBehaviour
         }
         else if (direction < 0)
         {
-            if (!_isJumping) _bottomHalfRenderer.enabled = false; ;
+            if (!_isJumping) _bottomHalfRenderer.enabled = false;
             _topHalfAnimator.SetBool("isCrouching", true);
         }
         else
