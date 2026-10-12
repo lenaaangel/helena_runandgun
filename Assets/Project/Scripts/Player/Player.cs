@@ -4,7 +4,7 @@ using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ManageInput : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Movement Values")]
     [SerializeField] private float _moveForce = 5f;
@@ -21,6 +21,7 @@ public class ManageInput : MonoBehaviour
     private bool _isLookingUp;
     private bool _isLookingDown;
     private bool _isGrounded;
+    private bool _isDead;
     private float _moveDirection;
     private float _lookDirection;
 
@@ -31,6 +32,7 @@ public class ManageInput : MonoBehaviour
     private InputAction _attackAction;
     private Action<bool, float> _movePerformed;
     private Action<bool, float> _lookPerformed;
+    private Action<bool> _playerDeath;
     private Rigidbody2D _rb;
     private CapsuleCollider2D _collider;
 
@@ -43,6 +45,7 @@ public class ManageInput : MonoBehaviour
         _attackAction = _inputActions.Player.Attack;
         _movePerformed = PlayerEvents.RaiseMovePerformed;
         _lookPerformed = PlayerEvents.RaiseLookPerformed;
+        _playerDeath = PlayerEvents.RaisePlayerDeath;
         _rb = GetComponent<Rigidbody2D>();
         _collider = GetComponent<CapsuleCollider2D>();
     }
@@ -68,9 +71,10 @@ public class ManageInput : MonoBehaviour
         _jumpAction.performed += OnPlayerJump;
         _lookAction.performed += context => OnLookPerformed(_isLookingUp, context.ReadValue<float>());
         _lookAction.canceled += context => OnLookCancelled();
-
+        _playerDeath += OnPlayerDeath;
         _standingColliderSize = _collider.size;
         _standingColliderOffset = _collider.offset;
+        
     }
 
     void Update()
@@ -164,7 +168,7 @@ public class ManageInput : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        if (collision.gameObject.CompareTag("Wall")) return;
         if (collision.gameObject.CompareTag("Ground") && !_isGrounded)
         {
             _isGrounded = true;
@@ -175,6 +179,7 @@ public class ManageInput : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag("Wall")) return;
         if (collision.gameObject.CompareTag("Ground"))
         {
             _isGrounded = false;
@@ -192,4 +197,12 @@ public class ManageInput : MonoBehaviour
             _rb.gravityScale = 5f;
         }
     }
+
+    public void OnPlayerDeath(bool isDead)
+    {
+        _isDead = isDead;
+        PlayerEvents.RaisePlayerDeath(_isDead);
+        _inputActions.Disable();
+    }
+
 }

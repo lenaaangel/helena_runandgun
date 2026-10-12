@@ -11,9 +11,8 @@ public class FollowPlayer : MonoBehaviour
         _cameraTransform = GetComponent<Transform>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        _cameraTransform.position = _sandbag.position + _followOffset;
+        _cameraTransform.position = Vector3.Lerp(_cameraTransform.position,_sandbag.position + _followOffset,1f * Time.deltaTime);
     }
 }

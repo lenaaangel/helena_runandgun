@@ -11,7 +11,7 @@ public class PlayerAnimationManager : MonoBehaviour
 
     private float _lookDirection;
     private bool _isJumping;
-
+    private bool _isDead;
 
     void Start()
     {
@@ -19,7 +19,7 @@ public class PlayerAnimationManager : MonoBehaviour
         PlayerEvents.onAttack += OnPlayerAttack;
         PlayerEvents.OnLook += OnPlayerLook;
         PlayerEvents.OnJump += OnPlayerJump;
-
+        PlayerEvents.onDeath += OnPlayerDeath;
     }
 
     // Update is called once per frame
@@ -30,6 +30,8 @@ public class PlayerAnimationManager : MonoBehaviour
 
     void OnPlayerMove(bool isMoving, float direction)
     {
+        if (_isDead) return;
+
         _topHalfAnimator.SetBool("isMoving", isMoving);
         _bottomHalfAnimator.SetBool("isMoving", isMoving);
         if(direction > 0)
@@ -47,8 +49,9 @@ public class PlayerAnimationManager : MonoBehaviour
     void OnPlayerAttack(bool isAttacking) 
     {
         
-        
-        if(_lookDirection < 0)
+        if (_isDead) return;
+
+        if (_lookDirection < 0)
         {
             if(!_isJumping) _bottomHalfRenderer.enabled = false;
             _topHalfAnimator.SetBool("isCrouching", true);
@@ -61,6 +64,7 @@ public class PlayerAnimationManager : MonoBehaviour
 
     void OnPlayerLook(bool isLooking, float direction)
     {
+        if (_isDead) return;
         _lookDirection = direction;
         if (direction > 0)
         {
@@ -83,10 +87,19 @@ public class PlayerAnimationManager : MonoBehaviour
 
     void OnPlayerJump(bool isJumping)
     {
+        if (_isDead) return;
         _isJumping = isJumping;
         _bottomHalfAnimator.SetBool("isJumping", isJumping);
         _topHalfAnimator.SetBool("isJumping", isJumping);
     }
 
-    
+    void OnPlayerDeath(bool isDead)
+    {
+        _isDead = isDead;
+        _topHalfRenderer.enabled = false;
+        _bottomHalfAnimator.SetBool("isMoving", false);
+        _bottomHalfAnimator.SetBool("isAttacking", false);
+        _bottomHalfAnimator.SetBool("isJumping", false);
+        _bottomHalfAnimator.SetBool("isDead", isDead);
+    }
 }
