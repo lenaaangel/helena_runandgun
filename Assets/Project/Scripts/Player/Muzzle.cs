@@ -56,7 +56,7 @@ public class Muzzle : MonoBehaviour
 
     void UpdateMuzzle()
     {
-        
+        if (_muzzle == null) return;
         Vector2 offset = _lookingLeft ? _standingLeftOffset : _standingRightOffset;
         
 

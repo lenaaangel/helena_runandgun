@@ -25,10 +25,14 @@ public class Player : MonoBehaviour
     private bool _isLookingDown;
     private bool _isGrounded;
     private bool _isDead;
+    private bool _canJump;
     private float _moveDirection;
     private float _lookDirection;
+    private float _coyoteTimer;
+    private float _coyoteTime = 5f;
 
-    private float _facingDirection = 1f;
+    private Vector2 _facingDirection = new Vector2(1,0);
+    private Vector2 _lastFacingDirection;
 
     private InputSystem_Actions _inputActions;
     private InputAction _moveAction;
@@ -59,16 +63,6 @@ public class Player : MonoBehaviour
     private void OnEnable()
     {
         _inputActions.Enable();
-       
-    }
-
-    private void OnDisable()
-    {
-        _inputActions.Disable();
-    }
-
-    void Start()
-    {
         _moveAction.performed += context => OnMovePerformed(_isMoveHeld, context.ReadValue<float>());
         _moveAction.canceled += context => OnMoveCancelled();
         _attackAction.performed += OnAttackPressed;
@@ -77,14 +71,38 @@ public class Player : MonoBehaviour
         _lookAction.performed += context => OnLookPerformed(_isLookingUp, context.ReadValue<float>());
         _lookAction.canceled += context => OnLookCancelled();
         _playerDeath += OnPlayerDeath;
+        PlayerEvents.onGamePaused += OnGamePaused;
+    }
+
+    private void OnDisable()
+    {
+        _inputActions.Disable();
+        _moveAction.performed -= context => OnMovePerformed(_isMoveHeld, context.ReadValue<float>());
+        _moveAction.canceled -= context => OnMoveCancelled();
+        _attackAction.performed -= OnAttackPressed;
+        _attackAction.canceled -= OnAttackCancelled;
+        _jumpAction.performed -= OnPlayerJump;
+        _lookAction.performed -= context => OnLookPerformed(_isLookingUp, context.ReadValue<float>());
+        _lookAction.canceled -= context => OnLookCancelled();
+        _playerDeath -= OnPlayerDeath;
+        PlayerEvents.onGamePaused -= OnGamePaused;
+    }
+
+    void Start()
+    {
+        _coyoteTimer = _coyoteTime;
+        _lastFacingDirection = _facingDirection;
         _standingColliderSize = _collider.size;
         _standingColliderOffset = _collider.offset;
         
     }
 
+
+
     void Update()
     {
-        Debug.Log(_facingDirection);
+        Debug.Log(_coyoteTimer);
+        Debug.Log(_canJump);
         ApplyGravity();
     }
 
@@ -93,15 +111,16 @@ public class Player : MonoBehaviour
         while (_isMoveHeld == true)
         {
 
-            _rb.AddForce(new Vector2(direction, 0) * _moveForce, ForceMode2D.Force);
+            _rb.AddForce(new Vector2(direction, 0) * (_moveForce), ForceMode2D.Force);
             yield return null;
         }
     }
 
     void OnMovePerformed(bool _isMoving, float direction)
     {
-        if (direction > 0) _facingDirection = 1;
-        else if (direction < 0) _facingDirection = -1;
+        if (direction > 0) _facingDirection = new Vector2(1,0);
+        else if (direction < 0) _facingDirection = new Vector2(-1, 0);
+        _lastFacingDirection = _facingDirection;
         if (_isLookingDown || _isLookingDown && _isAttacking) return;
         _isMoveHeld = true;
         _isMoving = _isMoveHeld;
@@ -140,6 +159,7 @@ public class Player : MonoBehaviour
     {
         if (direction > 0) 
         {
+            _facingDirection = new Vector2(0,1f);
             _isLookingUp = true;
             isLooking = _isLookingUp;
             _lookDirection = direction;
@@ -150,8 +170,10 @@ public class Player : MonoBehaviour
             _collider.offset += _colliderCrouchingOffset;
             _collider.size += _colliderCrouchingSize;
             _isLookingDown = true;
+            if(!_isGrounded) _facingDirection = new Vector2(0, -1f);
             _lookPerformed?.DynamicInvoke(false, direction);
         }
+        
         
     }
 
@@ -161,16 +183,18 @@ public class Player : MonoBehaviour
         _collider.offset = _standingColliderOffset;
         _isLookingDown = false;
         _isLookingUp = false;
+        _facingDirection = _lastFacingDirection;
         _lookPerformed?.DynamicInvoke(_isLookingUp, 0);
     }
 
     void OnPlayerJump(InputAction.CallbackContext context)
     {
-
+        if (!_canJump) return;
         if (!_isGrounded || _isLookingDown) return;
         if (context.performed)
         {
             _isGrounded = false;
+            _canJump = false;
             PlayerEvents.RaiseJumpPerformed(true);
             _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
@@ -181,9 +205,12 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall")) return;
         if (collision.gameObject.CompareTag("Ground") && !_isGrounded)
         {
+            _coyoteTimer = 0;
             _isGrounded = true;
+            _canJump = true;
+            _facingDirection = _lastFacingDirection;
             PlayerEvents.RaiseJumpPerformed(false);
-
+            StopCoroutine(CoyoteTime());
         }
         if (_isDead)
         {
@@ -200,7 +227,9 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall")) return;
         if (collision.gameObject.CompareTag("Ground"))
         {
+            _coyoteTimer = _coyoteTime;
             _isGrounded = false;
+            StartCoroutine(CoyoteTime());
         }
     }
 
@@ -229,14 +258,33 @@ public class Player : MonoBehaviour
         
         while(_isAttacking && !_isDead)
         {
-                    
             GameObject bullet = Instantiate(_bulletPrefab, new Vector3(_muzzle.position.x, _muzzle.position.y, 0), Quaternion.identity);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            rb.AddForce(new Vector2(_facingDirection, 0f) * 10f, ForceMode2D.Impulse);
-            yield return new WaitForSeconds(1f);
-        
+            rb.AddForce(_facingDirection * 20f, ForceMode2D.Impulse);
+            yield return new WaitForSeconds(0.5f);
         }
         
+    }
+
+    private IEnumerator CoyoteTime()
+    {
+        if (!_isGrounded)
+        {
+            while (_coyoteTimer > 0)
+            {
+                _canJump = true;
+                _coyoteTimer = _coyoteTimer - Time.deltaTime;
+                
+            }
+            _canJump = false;
+            yield return null;
+        }
+    }
+
+    void OnGamePaused(bool isGamePaused)
+    {
+        if (isGamePaused) _inputActions.Disable();
+        if (!isGamePaused) _inputActions.Enable();
     }
 
 }

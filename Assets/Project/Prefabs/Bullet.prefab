@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5211322315761877205}
   - component: {fileID: 8380517450832767206}
-  - component: {fileID: 1652078514786250999}
   - component: {fileID: 5283663764747491557}
-  m_Layer: 0
+  - component: {fileID: 6067287884950201581}
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,18 +71,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: -0.0021990538, y: 0}
   m_Radius: 0.23738182
---- !u!114 &1652078514786250999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1728902316332794095}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d289dd4ee8ec764cb9dde1fa5191b03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bullet
 --- !u!50 &5283663764747491557
 Rigidbody2D:
   serializedVersion: 5
@@ -110,6 +98,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &6067287884950201581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728902316332794095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe77cadbb2576d499e5951e826c5a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBullet
 --- !u!1 &6981023258398665803
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,7 +120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 424191130537345431}
   - component: {fileID: 1737369587068527315}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BulletSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6, y: 6, z: 6}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5211322315761877205}
@@ -189,9 +189,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -913664579208718371, guid: 6edc952452f3b90489f9b7160f42b3e7, type: 3}
+  m_Sprite: {fileID: -1269759306, guid: 817f29c4d9cc2a641a6501bd28a5126a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

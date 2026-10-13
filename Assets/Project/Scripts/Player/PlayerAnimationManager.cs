@@ -13,13 +13,22 @@ public class PlayerAnimationManager : MonoBehaviour
     private bool _isJumping;
     private bool _isDead;
 
-    void Start()
+    private void OnEnable()
     {
         PlayerEvents.OnMove += OnPlayerMove;
         PlayerEvents.onAttack += OnPlayerAttack;
         PlayerEvents.OnLook += OnPlayerLook;
         PlayerEvents.OnJump += OnPlayerJump;
         PlayerEvents.onDeath += OnPlayerDeath;
+    }
+
+    private void OnDisable()
+    {
+        PlayerEvents.OnMove -= OnPlayerMove;
+        PlayerEvents.onAttack -= OnPlayerAttack;
+        PlayerEvents.OnLook -= OnPlayerLook;
+        PlayerEvents.OnJump -= OnPlayerJump;
+        PlayerEvents.onDeath -= OnPlayerDeath;
     }
 
     // Update is called once per frame

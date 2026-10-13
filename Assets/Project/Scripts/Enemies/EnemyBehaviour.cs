@@ -20,11 +20,15 @@ public class EnemyBehaviour : MonoBehaviour
 
     private bool _playerDetected;
     private bool _isAttacking;
+    private Rigidbody2D _rb;
+    private Collider2D _collider;
 
     public Action<EnemyBehaviour> OnDeath;
 
     private void Awake()
     {
+        _collider = GetComponent<Collider2D>();
+        _rb = GetComponent<Rigidbody2D>();
         _exclamationRenderer.enabled = false;
     }
 
@@ -84,6 +88,9 @@ public class EnemyBehaviour : MonoBehaviour
     {
         _isDead = isDead;
         _enemyAnimator.SetBool("isDead", _isDead);
+        _collider.enabled = false;
+        _rb.bodyType = RigidbodyType2D.Static;
+        
         StartCoroutine(Death());
     }
 
