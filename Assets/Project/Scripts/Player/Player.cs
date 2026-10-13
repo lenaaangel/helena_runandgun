@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,11 +24,12 @@ public class Player : MonoBehaviour
     private bool _isLookingDown;
     private bool _isGrounded;
     private bool _isDead;
-    private bool _canJump;
+    //private bool _canJump;
     private float _moveDirection;
     private float _lookDirection;
-    private float _coyoteTimer;
-    private float _coyoteTime = 5f;
+    
+    //private float _coyoteTimer;
+    //private float _coyoteTime = 5f;
 
     private Vector2 _facingDirection = new Vector2(1,0);
     private Vector2 _lastFacingDirection;
@@ -90,7 +90,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        _coyoteTimer = _coyoteTime;
+        //_coyoteTimer = _coyoteTime;
         _lastFacingDirection = _facingDirection;
         _standingColliderSize = _collider.size;
         _standingColliderOffset = _collider.offset;
@@ -101,8 +101,8 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(_coyoteTimer);
-        Debug.Log(_canJump);
+        //Debug.Log(_coyoteTimer);
+        //Debug.Log(_canJump);
         ApplyGravity();
     }
 
@@ -189,12 +189,12 @@ public class Player : MonoBehaviour
 
     void OnPlayerJump(InputAction.CallbackContext context)
     {
-        if (!_canJump) return;
+        //if (!_canJump) return;
         if (!_isGrounded || _isLookingDown) return;
         if (context.performed)
         {
             _isGrounded = false;
-            _canJump = false;
+            //_canJump = false;
             PlayerEvents.RaiseJumpPerformed(true);
             _rb.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
@@ -205,12 +205,12 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall")) return;
         if (collision.gameObject.CompareTag("Ground") && !_isGrounded)
         {
-            _coyoteTimer = 0;
+            //_coyoteTimer = _coyoteTime;
             _isGrounded = true;
-            _canJump = true;
-            _facingDirection = _lastFacingDirection;
+            //_canJump = true;
+            if(!_isLookingUp)_facingDirection = _lastFacingDirection;
             PlayerEvents.RaiseJumpPerformed(false);
-            StopCoroutine(CoyoteTime());
+            //StopCoroutine(CoyoteTime());
         }
         if (_isDead)
         {
@@ -227,9 +227,8 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Wall")) return;
         if (collision.gameObject.CompareTag("Ground"))
         {
-            _coyoteTimer = _coyoteTime;
             _isGrounded = false;
-            StartCoroutine(CoyoteTime());
+            //StartCoroutine(CoyoteTime());
         }
     }
 
@@ -266,7 +265,7 @@ public class Player : MonoBehaviour
         
     }
 
-    private IEnumerator CoyoteTime()
+   /* private IEnumerator CoyoteTime()
     {
         if (!_isGrounded)
         {
@@ -274,13 +273,13 @@ public class Player : MonoBehaviour
             {
                 _canJump = true;
                 _coyoteTimer = _coyoteTimer - Time.deltaTime;
-                
+                yield return null;
             }
             _canJump = false;
             yield return null;
         }
     }
-
+   */
     void OnGamePaused(bool isGamePaused)
     {
         if (isGamePaused) _inputActions.Disable();

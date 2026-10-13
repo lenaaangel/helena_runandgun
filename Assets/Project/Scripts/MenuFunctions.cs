@@ -87,4 +87,9 @@ public class MenuFunctions : MonoBehaviour
         }
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
 }
